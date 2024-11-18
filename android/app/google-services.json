@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "967274712840",
+    "project_id": "flutter-list-exam",
+    "storage_bucket": "flutter-list-exam.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967274712840:android:5de8e42239b1b7fb5766bd",
+        "android_client_info": {
+          "package_name": "com.example.firebase_list_exam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzFDHeZCxq2tm1TOa6VJdhVFPM5ms7Two"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
