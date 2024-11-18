@@ -24,7 +24,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           StreamBuilder<QuerySnapshot>(
             // Firestore의 category 컬렉션 구독
-            stream: db.collection('category').snapshots(),
+            stream: db.collection('category').orderBy("createdAt", descending: false).snapshots(),
             builder: (context, snapshot) {
               // 데이터 로드 중 표시
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -55,6 +55,74 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: GestureDetector(
                         onLongPress: () {
                           print("long");
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Item change'),
+                                content: TextField(
+                                  controller: titleTextController,
+                                  autofocus: true,
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      // Firestore에 데이터 업데이트
+                                      final updateRef = db.collection('category').doc(docId);
+                                      updateRef.update({'name': titleTextController.text}).then((value) =>
+                                          print('Category updated')).
+                                      catchError((error) =>
+                                          print('Failed to update category: $error'));
+                                      titleTextController.clear();
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('edit'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      final deleteRef = db.collection('category').doc(docId);
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: const Text('정말 지우시겠습니까?'),
+                                            actions: [
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  deleteRef.delete().then((value) =>
+                                                      print('document deleted')).catchError((error) =>
+                                                      print('Failed to delete category: $error'));
+
+                                                  // 삭제 확인 AlertDialog 닫기
+                                                  Navigator.pop(context);
+                                                  // 첫 번째 AlertDialog 닫기
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('delete'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('Cancel'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: const Text('delete'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Cancel'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                         child: ListTile(
                           title: Text(data['name'] ?? 'Unknown'), // Firestore의 'name' 필드 사용
@@ -160,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       // Firestore에 데이터 추가
                       final docRef = db.collection('category');
-                      docRef.add({'name': titleTextController.text});
+                      docRef.add({'name': titleTextController.text, 'createdAt': FieldValue.serverTimestamp(),});
                       titleTextController.clear();
                       Navigator.pop(context);
                     },
